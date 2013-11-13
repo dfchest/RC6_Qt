@@ -1,6 +1,6 @@
-#include "fourwords.h"
+#include "block.h"
 
-FourWords::FourWords()
+Block::Block()
 {
     words.append(0);
     words.append(0);
@@ -8,7 +8,7 @@ FourWords::FourWords()
     words.append(0);
 }
 
-FourWords::FourWords(int a, int b, int c, int d)
+Block::Block(int a, int b, int c, int d)
 {
     words.append(a);
     words.append(b);
@@ -16,17 +16,17 @@ FourWords::FourWords(int a, int b, int c, int d)
     words.append(d);
 }
 
-void FourWords::ShiftLeft()
+void Block::ShiftLeft()
 {
     words.move(0, 3);
 }
 
-void FourWords::ShiftRight()
+void Block::ShiftRight()
 {
     words.move(3, 0);
 }
 
-void FourWords::set(int a, int b, int c, int d)
+void Block::set(int a, int b, int c, int d)
 {
     words[0] = a;
     words[1] = b;

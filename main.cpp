@@ -4,17 +4,18 @@
 #include <QDebug>
 #include <QFile>
 
-#include "fourwords.h"
+#include "block.h"
 #include "roundkey.h"
 #include "bcs.h"
+#include "rc6.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    /*QApplication a(argc, argv);
     MainWindow w;
-    w.show();
+    w.show();*/
     
-    /*FourWords a1(1, 2, 3, 4);
+    /*Block a1(1, 2, 3, 4);
     qDebug() << a1[0];
 
     a1.ShiftLeft();
@@ -51,5 +52,8 @@ int main(int argc, char *argv[])
     f1->open(QIODevice::ReadOnly);
     QDataStream in;
 
-    return a.exec();
+    RC6 tmp(16, 20, 16, "1111111111111111");
+    tmp.Encryption();
+
+    //return a.exec();
 }

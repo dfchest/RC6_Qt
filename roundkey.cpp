@@ -18,9 +18,9 @@ RoundKey::RoundKey()
     qDebug() << AdvancedKey;
 }
 
-RoundKey::RoundKey(int _w, int _r, int _l, QString _key)
+RoundKey::RoundKey(int _w, int _r, int _l, std::string _key)
 {
-    key = _key.toStdString();
+    key = _key;
 
     w = _w;
     r = _r;

@@ -12,15 +12,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    fourwords.cpp \
     bcs.cpp \
     roundkey.cpp \
-    rc6.cpp
+    rc6.cpp \
+    block.cpp
 
 HEADERS  += mainwindow.h \
-    fourwords.h \
     bcs.h \
     roundkey.h \
-    rc6.h
+    rc6.h \
+    block.h
 
 FORMS    += mainwindow.ui

@@ -1,16 +1,16 @@
 #ifndef FOURWORDS_H
 #define FOURWORDS_H
 
-#include <QTypeInfo>
+#include <QList>
 
-class FourWords
+class Block
 {
 private:
     QList<quint64> words;
 
 public:
-    FourWords();
-    FourWords(int a, int b, int c, int d);
+    Block();
+    Block(int a, int b, int c, int d);
 
     void ShiftLeft();
     void ShiftRight();

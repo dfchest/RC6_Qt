@@ -35,7 +35,7 @@ private:
 
 public:
     RoundKey();
-    RoundKey(int _w, int _r, int _l, QString _key);
+    RoundKey(int _w, int _r, int _l, std::string _key);
 
     void Advanced();
 };
