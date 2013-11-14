@@ -48,10 +48,6 @@ int main(int argc, char *argv[])
     key1.Advanced();
     key2.Advanced();*/
 
-    QFile* f1 = new QFile("D:\\in.txt");
-    f1->open(QIODevice::ReadOnly);
-    QDataStream in;
-
     RC6 tmp(16, 20, 16, "1111111111111111");
     tmp.Encryption();
 

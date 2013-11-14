@@ -24,31 +24,42 @@ RC6::RC6(int _w, int _r, int _l, QString _key)
 
 void RC6::Encryption()
 {
-    QFile* f1 = new QFile("D:\\in.txt");
-    f1->open(QIODevice::ReadOnly);
+    QFile* f1 = new QFile("C:\\QtProject\\in.txt");
+    f1->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
     QDataStream in(f1);
 
-    quint16 t;
-
-    in >> t;
-    block[0] = t;
-
-    in >> t;
-    block[1] = t;
-
-    in >> t;
-    block[2] = t;
-
-    in >> t;
-    qDebug() << in.status();
-    block[3] = t;
-
-    qDebug() << block[0] << block[1] << block[2] << block[3];
+    while( ReadBlock(in) )
+    {
+        qDebug() << block[0] << block[1] << block[2] << block[3];
+    }
 }
 
 int RC6::ReadBlock(QDataStream &in)
 {
+    block.set(0, 0, 0, 0);
+
     if( in.status() == QDataStream::ReadPastEnd ) return 0;
 
+    quint8 byte;
 
+    int i, j;
+
+    for( i = 0; i < 4; i++ )
+    {
+        for( j = 0; j < w/8; j++)
+        {
+            byte = 0;
+            block[i] = block[i] << 8;
+
+            if( ! ( in.status() == QDataStream::ReadPastEnd) )
+            {
+                in >> byte;
+                block[i] |= byte;
+            }
+        }
+
+        if( in.status() == QDataStream::ReadPastEnd )
+            return 1;
+    }
+    return 1;
 }
