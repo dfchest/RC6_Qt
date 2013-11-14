@@ -21,6 +21,9 @@ private:
     Block block;
 
     int ReadBlock(QDataStream &in);
+    void WriteBlock(QDataStream& out);
+
+    void EncryptionBlock();
 
 public:
     RC6();
