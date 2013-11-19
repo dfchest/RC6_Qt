@@ -1,67 +1,60 @@
 #include "bcs.h"
 
-quint64 BCS::Shift(quint64 number, int w, quint64 shift)
+quint64 BCS::Shift(quint64 number, int w, quint64 shift, Mode mode)
 {
     if (shift == 0)
         return number;
 
-    quint64 sh = shift;
-
-    if (shift < 0)
-    {
-        sh = -sh;
+    if (mode == toLeft)
         switch (w)
         {
             case 16 :
             {
-                sh %= 16;
+                shift %= 16;
                 quint16 num = (quint16)number;
-                return (quint64)(quint16)(num << sh | ((num >> (16 - sh)) & ((1 << sh) - 1)));
+                return (quint16)(num << shift | num >> 16-shift);
                 break;
             }
 
             case 32 :
             {
-                sh %= 32;
+                shift %= 32;
                 quint32 num = (quint32)number;
-                return (quint64)(quint32)(num << sh | ((num >> (32 - sh)) & ((1 << sh) - 1)));
+                return (quint32)(num << shift | num >> 32-shift);
                 break;
             }
 
             case 64 : default :
             {
-                sh %= 64;
-                return (number << sh | ((number >> (64 - sh)) & (quint64)((1 << sh) - 1)));
+                shift %= 64;
+                return (number << shift | number >> 64-shift);
                 break;
             }
         }
-    }
     else
-    {
         switch (w)
         {
             case 16 :
             {
-                sh %= 16;
+                shift %= 16;
                 quint16 num = (quint16)number;
-                return (quint64)(quint16)(num >> sh | ((num << (16 - sh)) & ((1 >> sh) - 1)));
+                return (quint16)(num >> shift | num << 16-shift);
                 break;
             }
 
             case 32 :
             {
-                sh %= 32;
+                shift %= 32;
                 quint32 num = (quint32)number;
-                return (quint64)(quint32)(num >> sh | ((num << (32 - sh)) & ((1 >> sh) - 1)));
+                return (quint32)(num >> shift | num << 32-shift);
                 break;
             }
 
             case 64 : default :
             {
-                sh %= 64;
-                return (number >> sh | ((number << (64 - sh)) & (quint64)((1 >> sh) - 1)));
+                shift %= 64;
+                return (number >> shift | number << 64-shift);
                 break;
             }
         }
-    }
 }

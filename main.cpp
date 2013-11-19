@@ -11,9 +11,9 @@
 
 int main(int argc, char *argv[])
 {
-    /*QApplication a(argc, argv);
+    QApplication a(argc, argv);
     MainWindow w;
-    w.show();*/
+    w.show();
     
     /*Block a1(1, 2, 3, 4);
     qDebug() << a1[0];
@@ -48,8 +48,9 @@ int main(int argc, char *argv[])
     key1.Advanced();
     key2.Advanced();*/
 
-    RC6 tmp(16, 20, 16, "1111111111111111");
+    RC6 tmp(16, 20, 16, "4041485177210abc");
     tmp.Encryption();
+    tmp.Decryption();
 
-    //return a.exec();
+    return a.exec();
 }

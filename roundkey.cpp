@@ -26,6 +26,16 @@ RoundKey::RoundKey(int _w, int _r, int _l, std::string _key)
     r = _r;
     l = _l;
 
+    Initialization(_key);
+
+    //qDebug() << AdvancedKey;
+}
+
+void RoundKey::Initialization(std::string _key)
+{
+    AdvancedKey.clear();
+    key = _key;
+
     switch (w)
     {
         case 16 :
@@ -51,8 +61,6 @@ RoundKey::RoundKey(int _w, int _r, int _l, std::string _key)
     }
 
     a = b = 0;
-
-    qDebug() << AdvancedKey;
 }
 
 void RoundKey::Advanced()
@@ -64,15 +72,15 @@ void RoundKey::Advanced()
 
     for (int m = 0; m < k; m++)
     {
-        AdvancedKey[i] = BCS::Shift((AdvancedKey[i] + a + b), w, -3);
+        AdvancedKey[i] = BCS::Shift((AdvancedKey[i] + a + b), w, 3, toLeft);
 
         a = AdvancedKey[i];
 
-        b = BCS::Shift(ReadWordFromKey(j) + a + b, w, a + b);
+        b = BCS::Shift(ReadWordFromKey(j) + a + b, w, a + b, toLeft);
 
         WriteWordToKey(j);
 
-        i = (i+1)%(2*r+4);
+        i = (i+1)%(2*r + 4);
         j = (j+1)%tau;
     }
 
@@ -99,7 +107,7 @@ void RoundKey::WriteWordToKey(int j)
 
     for(int i = w/8 - 1; i >= 0; i-- )
     {
-        key[j+i] = (uint8_t)_b;
+        key[j+i] = (quint8)_b;
         _b = _b >> 8;
     }
 }

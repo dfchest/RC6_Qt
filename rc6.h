@@ -24,12 +24,16 @@ private:
     void WriteBlock(QDataStream& out);
 
     void EncryptionBlock();
+    void DecryptionBlock();
+
+    quint64 mod(quint64 number);
 
 public:
     RC6();
     RC6(int _w, int _r, int _l, QString _key);
 
     void Encryption();
+    void Decryption();
 };
 
 #endif // RC6_H

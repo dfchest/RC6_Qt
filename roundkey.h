@@ -38,6 +38,7 @@ public:
     RoundKey(int _w, int _r, int _l, std::string _key);
 
     void Advanced();
+    void Initialization(std::string _key);
 
     quint64 & operator [] (int n) { return AdvancedKey[n]; }
 };

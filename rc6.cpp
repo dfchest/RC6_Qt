@@ -24,21 +24,107 @@ RC6::RC6(int _w, int _r, int _l, QString _key)
 
 void RC6::Encryption()
 {
-    QFile* f1 = new QFile("C:\\QtProject\\in.txt");
+    QFile* f1 = new QFile("D:\\in.txt");
     f1->open(QIODevice::ReadOnly);
     QDataStream in(f1);
 
-    QFile* f2 = new QFile("C:\\QtProject\\out.txt");
+    QFile* f2 = new QFile("D:\\out.txt");
     f2->open(QIODevice::WriteOnly);
     QDataStream out(f2);
 
+    round_key->Initialization(key);
+
     while( ReadBlock(in) )
     {
+        qDebug() << "read en " << block[0] << block[1] << block[2] << block[3];
+        EncryptionBlock();
+        qDebug() << "write en" << block[0] << block[1] << block[2] << block[3];
         WriteBlock(out);
     }
 
     f1->close();
     f2->close();
+}
+
+void RC6::Decryption()
+{
+    QFile* f1 = new QFile("D:\\out.txt");
+    f1->open(QIODevice::ReadOnly);
+    QDataStream in(f1);
+
+    QFile* f2 = new QFile("D:\\in_d.txt");
+    f2->open(QIODevice::WriteOnly);
+    QDataStream out(f2);
+
+    round_key->Initialization(key);
+
+    while( ReadBlock(in) )
+    {
+        qDebug() << "read de " << block[0] << block[1] << block[2] << block[3];
+        DecryptionBlock();
+        qDebug() << "write de" << block[0] << block[1] << block[2] << block[3];
+        WriteBlock(out);
+    }
+
+    f1->close();
+    f2->close();
+}
+
+void RC6::EncryptionBlock()
+{
+    quint64  t, u, logw = qLn(w)/qLn(2);
+
+    round_key->Advanced();
+
+    block[1] = mod(block[1] + (*round_key)[0]);
+    qDebug() << block[1];
+    block[3] = mod(block[3] + (*round_key)[1]);
+    qDebug() << block[3];
+
+    for( int i = 1; i < r+1; i++ )
+    {
+        t = BCS::Shift(mod( block[1] * ( 2 * block[1] + 1 ) ), w, logw, toLeft);
+        u = BCS::Shift(mod( block[3] * ( 2 * block[3] + 1 ) ), w, logw, toLeft);
+
+        qDebug() << t << u;
+
+        qDebug() << block[0] << block[1] << block[2] << block[3];
+
+        qDebug() << (block[0] xor t);
+        qDebug() << BCS::Shift(block[0] xor t, w, u, toLeft);
+
+        block[0] = mod(BCS::Shift(block[0] xor t, w, u, toLeft) + (*round_key)[2*i]);
+        block[2] = mod(BCS::Shift(block[2] xor u, w, t, toLeft) + (*round_key)[2*i + 1]);
+
+        block.ShiftLeft();
+    }
+
+    block[0] = mod(block[0] + (*round_key)[2*r + 2]);
+    block[2] = mod(block[2] + (*round_key)[2*r + 3]);
+}
+
+void RC6::DecryptionBlock()
+{
+    quint64  t, u, logw = qLn(w)/qLn(2);
+
+    round_key->Advanced();
+
+    block[2] = mod(block[2] - (*round_key)[2*r +3]);
+    block[0] = mod(block[0] - (*round_key)[2*r +2]);
+
+    for( int i = r; i > 0; i-- )
+    {
+        block.ShiftRight();
+
+        t = BCS::Shift(mod(block[1] * ( 2 * block[1] + 1 ) ), w, logw, toLeft);
+        u = BCS::Shift(mod(block[3] * ( 2 * block[3] + 1 ) ), w, logw, toLeft);
+
+        block[0] = BCS::Shift(mod(block[0] - (*round_key)[2*i]), w, u, toRight) xor t;
+        block[2] = BCS::Shift(mod(block[2] - (*round_key)[2*i + 1]), w, t, toRight) xor u;
+    }
+
+    block[3] = mod(block[3] - (*round_key)[1]);
+    block[1] = mod(block[1] - (*round_key)[0]);
 }
 
 int RC6::ReadBlock(QDataStream &in)
@@ -48,6 +134,7 @@ int RC6::ReadBlock(QDataStream &in)
     if( in.status() == QDataStream::ReadPastEnd ) return 0;
 
     quint8 byte;
+    bool f = false;
 
     int i, j;
 
@@ -61,13 +148,23 @@ int RC6::ReadBlock(QDataStream &in)
                 in >> byte;
 
             if( ! ( in.status() == QDataStream::ReadPastEnd) )
+            {
                 block[i] |= byte;
+                f = true;
+            }
         }
 
         if( in.status() == QDataStream::ReadPastEnd )
-            return 1;
+            if(f)
+                return 1;
+            else
+                return 0;
     }
-    return 1;
+
+    if(f)
+        return 1;
+    else
+        return 0;
 }
 
 void RC6::WriteBlock(QDataStream &out)
@@ -89,17 +186,13 @@ void RC6::WriteBlock(QDataStream &out)
         }
 }
 
-void RC6::EncryptionBlock()
+
+quint64 RC6::mod(quint64 number)
 {
-    quint64  t, u;
+    if( w == 64)
+        return (quint64)number;
 
-    block[1] = (block[1] + (*round_key)[0]) % (quint64)qPow(2, w);
-    block[3] = (block[3] + (*round_key)[1]) % (quint64)qPow(2, w);
+    quint64 pow = qPow(2, w);
 
-    for( int i = 1; i < r+1; i++ )
-    {
-        t = BCS::Shift(block[1] * ( 2 * block[1] + 1 ), w, w);
-        u = BCS::Shift(block[3] * ( 2 * block[3] + 1 ), w, w);
-
-    }
+    return number % pow;
 }
