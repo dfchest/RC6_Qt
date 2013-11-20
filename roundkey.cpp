@@ -14,8 +14,6 @@ RoundKey::RoundKey()
         AdvancedKey.append(AdvancedKey[i - 1] + Q32);
 
     a = b = 0;
-
-    qDebug() << AdvancedKey;
 }
 
 RoundKey::RoundKey(int _w, int _r, int _l, std::string _key)
@@ -27,8 +25,6 @@ RoundKey::RoundKey(int _w, int _r, int _l, std::string _key)
     l = _l;
 
     Initialization(_key);
-
-    //qDebug() << AdvancedKey;
 }
 
 void RoundKey::Initialization(std::string _key)
@@ -83,8 +79,6 @@ void RoundKey::Advanced()
         i = (i+1)%(2*r + 4);
         j = (j+1)%tau;
     }
-
-    qDebug() << AdvancedKey;
 }
 
 

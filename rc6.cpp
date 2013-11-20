@@ -24,11 +24,11 @@ RC6::RC6(int _w, int _r, int _l, QString _key)
 
 void RC6::Encryption()
 {
-    QFile* f1 = new QFile("D:\\in.txt");
+    QFile* f1 = new QFile("D:\\test.jpg");
     f1->open(QIODevice::ReadOnly);
     QDataStream in(f1);
 
-    QFile* f2 = new QFile("D:\\out.txt");
+    QFile* f2 = new QFile("D:\\test_e.jpg");
     f2->open(QIODevice::WriteOnly);
     QDataStream out(f2);
 
@@ -36,9 +36,7 @@ void RC6::Encryption()
 
     while( ReadBlock(in) )
     {
-        qDebug() << "read en " << block[0] << block[1] << block[2] << block[3];
         EncryptionBlock();
-        qDebug() << "write en" << block[0] << block[1] << block[2] << block[3];
         WriteBlock(out);
     }
 
@@ -48,11 +46,11 @@ void RC6::Encryption()
 
 void RC6::Decryption()
 {
-    QFile* f1 = new QFile("D:\\out.txt");
+    QFile* f1 = new QFile("D:\\test_e.jpg");
     f1->open(QIODevice::ReadOnly);
     QDataStream in(f1);
 
-    QFile* f2 = new QFile("D:\\in_d.txt");
+    QFile* f2 = new QFile("D:\\test_d.jpg");
     f2->open(QIODevice::WriteOnly);
     QDataStream out(f2);
 
@@ -60,9 +58,7 @@ void RC6::Decryption()
 
     while( ReadBlock(in) )
     {
-        qDebug() << "read de " << block[0] << block[1] << block[2] << block[3];
         DecryptionBlock();
-        qDebug() << "write de" << block[0] << block[1] << block[2] << block[3];
         WriteBlock(out);
     }
 
@@ -77,21 +73,12 @@ void RC6::EncryptionBlock()
     round_key->Advanced();
 
     block[1] = mod(block[1] + (*round_key)[0]);
-    qDebug() << block[1];
     block[3] = mod(block[3] + (*round_key)[1]);
-    qDebug() << block[3];
 
     for( int i = 1; i < r+1; i++ )
     {
         t = BCS::Shift(mod( block[1] * ( 2 * block[1] + 1 ) ), w, logw, toLeft);
         u = BCS::Shift(mod( block[3] * ( 2 * block[3] + 1 ) ), w, logw, toLeft);
-
-        qDebug() << t << u;
-
-        qDebug() << block[0] << block[1] << block[2] << block[3];
-
-        qDebug() << (block[0] xor t);
-        qDebug() << BCS::Shift(block[0] xor t, w, u, toLeft);
 
         block[0] = mod(BCS::Shift(block[0] xor t, w, u, toLeft) + (*round_key)[2*i]);
         block[2] = mod(BCS::Shift(block[2] xor u, w, t, toLeft) + (*round_key)[2*i + 1]);
