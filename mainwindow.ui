@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>500</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>330</width>
-    <height>500</height>
+    <height>400</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>330</width>
-    <height>500</height>
+    <height>400</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -91,7 +91,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Round (0-32000)</string>
+     <string>Round (1-32000)</string>
     </property>
     <widget class="QSpinBox" name="RoungCount">
      <property name="geometry">
@@ -145,50 +145,50 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="encryption_Button">
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>390</y>
+      <y>300</y>
       <width>75</width>
-      <height>23</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Encryption</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="decryption_Button">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>390</y>
+      <x>195</x>
+      <y>300</y>
       <width>75</width>
-      <height>23</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Decryption</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="InFile_Box">
     <property name="geometry">
      <rect>
       <x>15</x>
-      <y>190</y>
+      <y>180</y>
       <width>300</width>
       <height>50</height>
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Input File</string>
     </property>
-    <widget class="QLineEdit" name="lineEdit">
+    <widget class="QLineEdit" name="line_In">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>15</x>
        <y>20</y>
-       <width>113</width>
+       <width>180</width>
        <height>20</height>
       </rect>
      </property>
@@ -196,38 +196,38 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="browse_In">
      <property name="geometry">
       <rect>
        <x>210</x>
        <y>20</y>
        <width>75</width>
-       <height>23</height>
+       <height>20</height>
       </rect>
      </property>
      <property name="text">
-      <string>PushButton</string>
+      <string>Browse</string>
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_2">
+   <widget class="QGroupBox" name="OutFile_Box">
     <property name="geometry">
      <rect>
       <x>15</x>
-      <y>250</y>
+      <y>240</y>
       <width>300</width>
       <height>50</height>
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Output File</string>
     </property>
-    <widget class="QLineEdit" name="lineEdit_2">
+    <widget class="QLineEdit" name="line_Out">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>15</x>
        <y>20</y>
-       <width>113</width>
+       <width>180</width>
        <height>20</height>
       </rect>
      </property>
@@ -235,21 +235,21 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="browse_Out">
      <property name="geometry">
       <rect>
        <x>210</x>
        <y>20</y>
        <width>75</width>
-       <height>23</height>
+       <height>20</height>
       </rect>
      </property>
      <property name="text">
-      <string>PushButton</string>
+      <string>Browse</string>
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_3">
+   <widget class="QGroupBox" name="Pass_Box">
     <property name="geometry">
      <rect>
       <x>15</x>
@@ -259,19 +259,42 @@
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Password</string>
     </property>
-    <widget class="QLineEdit" name="lineEdit_3">
+    <widget class="QLineEdit" name="line_Pass">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>15</x>
        <y>20</y>
-       <width>251</width>
+       <width>270</width>
        <height>20</height>
       </rect>
      </property>
      <property name="readOnly">
       <bool>false</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="InitVector">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>330</y>
+      <width>300</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Initialization Vector</string>
+    </property>
+    <widget class="QLineEdit" name="line_InitVect">
+     <property name="geometry">
+      <rect>
+       <x>15</x>
+       <y>20</y>
+       <width>270</width>
+       <height>20</height>
+      </rect>
      </property>
     </widget>
    </widget>

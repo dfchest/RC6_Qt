@@ -22,13 +22,13 @@ RC6::RC6(int _w, int _r, int _l, QString _key)
     round_key = new RoundKey(w, r, l, key);
 }
 
-void RC6::Encryption()
+void RC6::Encryption(QString in_stirng, QString out_string)
 {
-    QFile* f1 = new QFile("D:\\test.jpg");
+    QFile* f1 = new QFile(in_stirng);
     f1->open(QIODevice::ReadOnly);
     QDataStream in(f1);
 
-    QFile* f2 = new QFile("D:\\test_e.jpg");
+    QFile* f2 = new QFile(out_string);
     f2->open(QIODevice::WriteOnly);
     QDataStream out(f2);
 
@@ -44,13 +44,13 @@ void RC6::Encryption()
     f2->close();
 }
 
-void RC6::Decryption()
+void RC6::Decryption(QString in_stirng, QString out_string)
 {
-    QFile* f1 = new QFile("D:\\test_e.jpg");
+    QFile* f1 = new QFile(in_stirng);
     f1->open(QIODevice::ReadOnly);
     QDataStream in(f1);
 
-    QFile* f2 = new QFile("D:\\test_d.jpg");
+    QFile* f2 = new QFile(out_string);
     f2->open(QIODevice::WriteOnly);
     QDataStream out(f2);
 

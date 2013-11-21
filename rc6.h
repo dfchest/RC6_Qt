@@ -32,8 +32,8 @@ public:
     RC6();
     RC6(int _w, int _r, int _l, QString _key);
 
-    void Encryption();
-    void Decryption();
+    void Encryption(QString in_stirng, QString out_string);
+    void Decryption(QString in_stirng, QString out_string);
 };
 
 #endif // RC6_H
