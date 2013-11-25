@@ -22,7 +22,7 @@ RC6::RC6(int _w, int _r, int _l, QString _key)
     round_key = new RoundKey(w, r, l, key);
 }
 
-void RC6::Encryption(QString in_stirng, QString out_string)
+void RC6::Encryption_mode_1(QString in_stirng, QString out_string)
 {
     QFile* f1 = new QFile(in_stirng);
     f1->open(QIODevice::ReadOnly);
@@ -44,7 +44,35 @@ void RC6::Encryption(QString in_stirng, QString out_string)
     f2->close();
 }
 
-void RC6::Decryption(QString in_stirng, QString out_string)
+void RC6::Encryption_mode_2(QString in_stirng, QString out_string, std::string InitVector)
+{
+    QFile* f1 = new QFile(in_stirng);
+    f1->open(QIODevice::ReadOnly);
+    QDataStream in(f1);
+
+    QFile* f2 = new QFile(out_string);
+    f2->open(QIODevice::WriteOnly);
+    QDataStream out(f2);
+
+    round_key->Initialization(key);
+
+    Block tmp = Block(InitVector);
+
+    while( ReadBlock(in) )
+    {
+        block = block xor tmp;
+
+        EncryptionBlock();
+        WriteBlock(out);
+
+        tmp = block;
+    }
+
+    f1->close();
+    f2->close();
+}
+
+void RC6::Decryption_mode_1(QString in_stirng, QString out_string)
 {
     QFile* f1 = new QFile(in_stirng);
     f1->open(QIODevice::ReadOnly);
@@ -60,6 +88,38 @@ void RC6::Decryption(QString in_stirng, QString out_string)
     {
         DecryptionBlock();
         WriteBlock(out);
+    }
+
+    f1->close();
+    f2->close();
+}
+
+void RC6::Decryption_mode_2(QString in_stirng, QString out_string, std::string InitVector)
+{
+    QFile* f1 = new QFile(in_stirng);
+    f1->open(QIODevice::ReadOnly);
+    QDataStream in(f1);
+
+    QFile* f2 = new QFile(out_string);
+    f2->open(QIODevice::WriteOnly);
+    QDataStream out(f2);
+
+    round_key->Initialization(key);
+
+    Block tmp_En = Block(InitVector);
+    Block tmp;
+
+    while( ReadBlock(in) )
+    {
+        tmp = block;
+
+        DecryptionBlock();
+
+        block = block xor tmp_En;
+
+        WriteBlock(out);
+
+        tmp_En = tmp;
     }
 
     f1->close();

@@ -39,7 +39,19 @@ void MainWindow::Encryption()
     key = ui->line_Pass->text();
 
     alg = new RC6(w, r, l, key);
-    alg->Encryption(ui->line_In->text(), ui->line_Out->text());
+
+    if(ui->mode_1->isChecked())
+    {
+        alg->Encryption_mode_1(ui->line_In->text(), ui->line_Out->text());
+        return;
+    }
+
+    if(ui->mode_2->isChecked())
+    {
+        alg->Encryption_mode_2(ui->line_In->text(), ui->line_Out->text(),
+                               ui->line_InitVect->text().toStdString());
+        return;
+    }
     delete(alg);
 }
 
@@ -63,7 +75,19 @@ void MainWindow::Decryption()
     key = ui->line_Pass->text();
 
     alg = new RC6(w, r, l, key);
-    alg->Decryption(ui->line_In->text(), ui->line_Out->text());
+
+    if(ui->mode_1->isChecked())
+    {
+        alg->Decryption_mode_1(ui->line_In->text(), ui->line_Out->text());
+        return;
+    }
+
+    if(ui->mode_2->isChecked())
+    {
+        alg->Decryption_mode_2(ui->line_In->text(), ui->line_Out->text(),
+                               ui->line_InitVect->text().toStdString());
+        return;
+    }
     delete(alg);
 }
 

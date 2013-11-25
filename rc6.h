@@ -32,8 +32,11 @@ public:
     RC6();
     RC6(int _w, int _r, int _l, QString _key);
 
-    void Encryption(QString in_stirng, QString out_string);
-    void Decryption(QString in_stirng, QString out_string);
+    void Encryption_mode_1(QString in_stirng, QString out_string);
+    void Encryption_mode_2(QString in_stirng, QString out_string, std::string InitVector);
+
+    void Decryption_mode_1(QString in_stirng, QString out_string);
+    void Decryption_mode_2(QString in_stirng, QString out_string, std::string InitVector);
 };
 
 #endif // RC6_H
