@@ -8,7 +8,7 @@ Block::Block()
     words.append(0);
 }
 
-Block::Block(int a, int b, int c, int d)
+Block::Block(quint64 a, quint64 b, quint64 c, quint64 d)
 {
     words.append(a);
     words.append(b);
@@ -27,24 +27,26 @@ Block::Block(std::string InitVector)
         for(int j = 0; j < l; j++)
         {
             k = k << 8;
-            k = k | InitVector[i+j];
+            k = k | InitVector[l*i+j];
         }
 
         words.append(k);
     }
 }
 
-void Block::ShiftLeft()
+void Block::ShiftLeft(int count)
 {
-    words.move(0, 3);
+    for(int i = 0; i < count; i++)
+        words.move(0, 3);
 }
 
-void Block::ShiftRight()
+void Block::ShiftRight(int count)
 {
-    words.move(3, 0);
+    for(int i = 0; i < count; i++)
+        words.move(3, 0);
 }
 
-void Block::set(int a, int b, int c, int d)
+void Block::set(quint64 a, quint64 b, quint64 c, quint64 d)
 {
     words[0] = a;
     words[1] = b;

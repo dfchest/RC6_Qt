@@ -72,6 +72,42 @@ void RC6::Encryption_mode_2(QString in_stirng, QString out_string, std::string I
     f2->close();
 }
 
+void RC6::Encryption_mode_3(QString in_stirng, QString out_string, std::string InitVector, int shift)
+{
+    QFile* f1 = new QFile(in_stirng);
+    f1->open(QIODevice::ReadOnly);
+    QDataStream in(f1);
+
+    QFile* f2 = new QFile(out_string);
+    f2->open(QIODevice::WriteOnly);
+    QDataStream out(f2);
+
+    round_key->Initialization(key);
+
+    Block tmp = Block(InitVector);
+    Block tmp_in;
+
+    while( ReadBlock(in, shift) )
+    {
+        tmp_in = block;
+        block = tmp;
+
+        EncryptionBlock();
+
+        block = tmp_in xor block;
+
+        WriteBlock(out, shift);
+
+        tmp.ShiftLeft(shift);
+
+        for(int i = 0; i < shift; i++)
+            tmp[4-shift+i] = block[i];
+    }
+
+    f1->close();
+    f2->close();
+}
+
 void RC6::Decryption_mode_1(QString in_stirng, QString out_string)
 {
     QFile* f1 = new QFile(in_stirng);
@@ -126,6 +162,42 @@ void RC6::Decryption_mode_2(QString in_stirng, QString out_string, std::string I
     f2->close();
 }
 
+void RC6::Decryption_mode_3(QString in_stirng, QString out_string, std::string InitVector, int shift)
+{
+    QFile* f1 = new QFile(in_stirng);
+    f1->open(QIODevice::ReadOnly);
+    QDataStream in(f1);
+
+    QFile* f2 = new QFile(out_string);
+    f2->open(QIODevice::WriteOnly);
+    QDataStream out(f2);
+
+    round_key->Initialization(key);
+
+    Block tmp = Block(InitVector);
+    Block tmp_in;
+
+    while( ReadBlock(in, shift) )
+    {
+        tmp_in = block;
+        block = tmp;
+
+        EncryptionBlock();
+
+        block = tmp_in xor block;
+
+        WriteBlock(out, shift);
+
+        tmp.ShiftLeft(shift);
+
+        for(int i = 0; i < shift; i++)
+            tmp[4-shift+i] = block[i];
+    }
+
+    f1->close();
+    f2->close();
+}
+
 void RC6::EncryptionBlock()
 {
     quint64  t, u, logw = qLn(w)/qLn(2);
@@ -174,7 +246,7 @@ void RC6::DecryptionBlock()
     block[1] = mod(block[1] - (*round_key)[0]);
 }
 
-int RC6::ReadBlock(QDataStream &in)
+int RC6::ReadBlock(QDataStream &in, int count)
 {
     block.set(0, 0, 0, 0);
 
@@ -185,7 +257,7 @@ int RC6::ReadBlock(QDataStream &in)
 
     int i, j;
 
-    for( i = 0; i < 4; i++ )
+    for( i = 0; i < count; i++ )
     {
         for( j = 0; j < w/8; j++)
         {
@@ -214,9 +286,9 @@ int RC6::ReadBlock(QDataStream &in)
         return 0;
 }
 
-void RC6::WriteBlock(QDataStream &out)
+void RC6::WriteBlock(QDataStream &out, int count)
 {
-    for( int i = 0; i < 4; i++ )
+    for( int i = 0; i < count; i++ )
         switch (w)
         {
             case 16 :

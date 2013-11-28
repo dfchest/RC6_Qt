@@ -10,13 +10,13 @@ private:
 
 public:
     Block();
-    Block(int a, int b, int c, int d);
+    Block(quint64 a, quint64 b, quint64 c, quint64 d);
     Block(std::string InitVector);
 
-    void ShiftLeft();
-    void ShiftRight();
+    void ShiftLeft(int count = 1);
+    void ShiftRight(int count = 1);
 
-    void set(int a, int b, int c, int d);
+    void set(quint64 a, quint64 b, quint64 c, quint64 d);
 
     quint64 & operator [] (int n) { return words[n%4]; }
     Block operator xor (Block r);

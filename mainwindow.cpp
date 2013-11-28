@@ -52,6 +52,24 @@ void MainWindow::Encryption()
                                ui->line_InitVect->text().toStdString());
         return;
     }
+
+    if(ui->mode_3->isChecked())
+    {
+        int shift = 1;
+
+        if(ui->shift_1_word->isChecked())
+            shift = 1;
+        else if(ui->shift_2_word->isChecked())
+            shift = 2;
+        else if(ui->shift_3_word->isChecked())
+            shift = 3;
+
+        alg->Encryption_mode_3(ui->line_In->text(), ui->line_Out->text(),
+                               ui->line_InitVect->text().toStdString(), shift);
+
+        return;
+    }
+
     delete(alg);
 }
 
@@ -88,6 +106,24 @@ void MainWindow::Decryption()
                                ui->line_InitVect->text().toStdString());
         return;
     }
+
+    if(ui->mode_3->isChecked())
+    {
+        int shift = 1;
+
+        if(ui->shift_1_word->isChecked())
+            shift = 1;
+        else if(ui->shift_2_word->isChecked())
+            shift = 2;
+        else if(ui->shift_3_word->isChecked())
+            shift = 3;
+
+        alg->Decryption_mode_3(ui->line_In->text(), ui->line_Out->text(),
+                               ui->line_InitVect->text().toStdString(), shift);
+
+        return;
+    }
+
     delete(alg);
 }
 
