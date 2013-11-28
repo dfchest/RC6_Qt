@@ -26,12 +26,10 @@ void MainWindow::Encryption()
 
     if(ui->w_16bit->isChecked())
         w = 16;
-    else
-        if(ui->w_32bit->isChecked())
-            w = 32;
-        else
-            if(ui->w_64bit->isChecked())
-                w = 64;
+    else if(ui->w_32bit->isChecked())
+        w = 32;
+    else if(ui->w_64bit->isChecked())
+        w = 64;
 
     r = ui->RoungCount->value();
     l = ui->PassLength->value();
@@ -53,18 +51,26 @@ void MainWindow::Encryption()
         return;
     }
 
+    int shift = 1;
+
+    if(ui->shift_1_word->isChecked())
+        shift = 1;
+    else if(ui->shift_2_word->isChecked())
+        shift = 2;
+    else if(ui->shift_3_word->isChecked())
+        shift = 3;
+
     if(ui->mode_3->isChecked())
     {
-        int shift = 1;
-
-        if(ui->shift_1_word->isChecked())
-            shift = 1;
-        else if(ui->shift_2_word->isChecked())
-            shift = 2;
-        else if(ui->shift_3_word->isChecked())
-            shift = 3;
-
         alg->Encryption_mode_3(ui->line_In->text(), ui->line_Out->text(),
+                               ui->line_InitVect->text().toStdString(), shift);
+
+        return;
+    }
+
+    if(ui->mode_4->isChecked())
+    {
+        alg->Encryption_mode_4(ui->line_In->text(), ui->line_Out->text(),
                                ui->line_InitVect->text().toStdString(), shift);
 
         return;
@@ -80,12 +86,10 @@ void MainWindow::Decryption()
 
     if(ui->w_16bit->isChecked())
         w = 16;
-    else
-        if(ui->w_32bit->isChecked())
-            w = 32;
-        else
-            if(ui->w_64bit->isChecked())
-                w = 64;
+    else if(ui->w_32bit->isChecked())
+        w = 32;
+    else if(ui->w_64bit->isChecked())
+        w = 64;
 
     r = ui->RoungCount->value();
     l = ui->PassLength->value();
@@ -107,18 +111,27 @@ void MainWindow::Decryption()
         return;
     }
 
+
+    int shift = 1;
+
+    if(ui->shift_1_word->isChecked())
+        shift = 1;
+    else if(ui->shift_2_word->isChecked())
+        shift = 2;
+    else if(ui->shift_3_word->isChecked())
+        shift = 3;
+
     if(ui->mode_3->isChecked())
     {
-        int shift = 1;
-
-        if(ui->shift_1_word->isChecked())
-            shift = 1;
-        else if(ui->shift_2_word->isChecked())
-            shift = 2;
-        else if(ui->shift_3_word->isChecked())
-            shift = 3;
-
         alg->Decryption_mode_3(ui->line_In->text(), ui->line_Out->text(),
+                               ui->line_InitVect->text().toStdString(), shift);
+
+        return;
+    }
+
+    if(ui->mode_4->isChecked())
+    {
+        alg->Decryption_mode_4(ui->line_In->text(), ui->line_Out->text(),
                                ui->line_InitVect->text().toStdString(), shift);
 
         return;

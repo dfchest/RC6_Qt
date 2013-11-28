@@ -3,8 +3,6 @@
 
 #include <QTypeInfo>
 
-#include <QDebug>
-
 enum Mode { toLeft, toRight };
 
 class BCS

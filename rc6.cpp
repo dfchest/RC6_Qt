@@ -34,11 +34,8 @@ void RC6::Encryption_mode_1(QString in_stirng, QString out_string)
 
     round_key->Initialization(key);
 
-    while( ReadBlock(in) )
-    {
-        EncryptionBlock();
-        WriteBlock(out);
-    }
+    while( ReadBlock(block, in) )
+        WriteBlock( EncryptionBlock(block), out );
 
     f1->close();
     f2->close();
@@ -58,12 +55,13 @@ void RC6::Encryption_mode_2(QString in_stirng, QString out_string, std::string I
 
     Block tmp = Block(InitVector);
 
-    while( ReadBlock(in) )
+    while( ReadBlock(block, in) )
     {
         block = block xor tmp;
 
-        EncryptionBlock();
-        WriteBlock(out);
+        block = EncryptionBlock(block);
+
+        WriteBlock( block, out);
 
         tmp = block;
     }
@@ -85,23 +83,53 @@ void RC6::Encryption_mode_3(QString in_stirng, QString out_string, std::string I
     round_key->Initialization(key);
 
     Block tmp = Block(InitVector);
-    Block tmp_in;
+    Block tmp_En;
 
-    while( ReadBlock(in, shift) )
+    while( ReadBlock(block, in, shift) )
     {
-        tmp_in = block;
-        block = tmp;
+        tmp_En = EncryptionBlock(tmp);
 
-        EncryptionBlock();
+        block = block xor tmp_En;
 
-        block = tmp_in xor block;
-
-        WriteBlock(out, shift);
+        WriteBlock(block, out, shift);
 
         tmp.ShiftLeft(shift);
 
         for(int i = 0; i < shift; i++)
             tmp[4-shift+i] = block[i];
+    }
+
+    f1->close();
+    f2->close();
+}
+
+void RC6::Encryption_mode_4(QString in_stirng, QString out_string, std::string InitVector, int shift)
+{
+    QFile* f1 = new QFile(in_stirng);
+    f1->open(QIODevice::ReadOnly);
+    QDataStream in(f1);
+
+    QFile* f2 = new QFile(out_string);
+    f2->open(QIODevice::WriteOnly);
+    QDataStream out(f2);
+
+    round_key->Initialization(key);
+
+    Block tmp = Block(InitVector);
+    Block tmp_En;
+
+    while( ReadBlock(block, in, shift) )
+    {
+        tmp_En = EncryptionBlock(tmp);
+
+        block = block xor tmp_En;
+
+        WriteBlock(block, out, shift);
+
+        tmp.ShiftLeft(shift);
+
+        for(int i = 0; i < shift; i++)
+            tmp[4-shift+i] = tmp_En[i];
     }
 
     f1->close();
@@ -120,11 +148,8 @@ void RC6::Decryption_mode_1(QString in_stirng, QString out_string)
 
     round_key->Initialization(key);
 
-    while( ReadBlock(in) )
-    {
-        DecryptionBlock();
-        WriteBlock(out);
-    }
+    while( ReadBlock(block, in) )
+        WriteBlock(DecryptionBlock(block), out);
 
     f1->close();
     f2->close();
@@ -145,15 +170,15 @@ void RC6::Decryption_mode_2(QString in_stirng, QString out_string, std::string I
     Block tmp_En = Block(InitVector);
     Block tmp;
 
-    while( ReadBlock(in) )
+    while( ReadBlock(block, in) )
     {
         tmp = block;
 
-        DecryptionBlock();
+        block = DecryptionBlock(block);
 
         block = block xor tmp_En;
 
-        WriteBlock(out);
+        WriteBlock(block, out);
 
         tmp_En = tmp;
     }
@@ -175,80 +200,120 @@ void RC6::Decryption_mode_3(QString in_stirng, QString out_string, std::string I
     round_key->Initialization(key);
 
     Block tmp = Block(InitVector);
-    Block tmp_in;
+    Block tmp_in, tmp_En;
 
-    while( ReadBlock(in, shift) )
+    while( ReadBlock(block, in, shift) )
     {
+        tmp_En = EncryptionBlock(tmp);
+
         tmp_in = block;
-        block = tmp;
 
-        EncryptionBlock();
+        block = block xor tmp_En;
 
-        block = tmp_in xor block;
-
-        WriteBlock(out, shift);
+        WriteBlock(block, out, shift);
 
         tmp.ShiftLeft(shift);
 
         for(int i = 0; i < shift; i++)
-            tmp[4-shift+i] = block[i];
+            tmp[4-shift+i] = tmp_in[i];
     }
 
     f1->close();
     f2->close();
 }
 
-void RC6::EncryptionBlock()
+void RC6::Decryption_mode_4(QString in_stirng, QString out_string, std::string InitVector, int shift)
 {
+    QFile* f1 = new QFile(in_stirng);
+    f1->open(QIODevice::ReadOnly);
+    QDataStream in(f1);
+
+    QFile* f2 = new QFile(out_string);
+    f2->open(QIODevice::WriteOnly);
+    QDataStream out(f2);
+
+    round_key->Initialization(key);
+
+    Block tmp = Block(InitVector);
+    Block tmp_En;
+
+    while( ReadBlock(block, in, shift) )
+    {
+        tmp_En = EncryptionBlock(tmp);
+
+        block = block xor tmp_En;
+
+        WriteBlock(block, out, shift);
+
+        tmp.ShiftLeft(shift);
+
+        for(int i = 0; i < shift; i++)
+            tmp[4-shift+i] = tmp_En[i];
+    }
+
+    f1->close();
+    f2->close();
+}
+
+Block RC6::EncryptionBlock(Block block_for_en)
+{
+    Block tmp = block_for_en;
+
     quint64  t, u, logw = qLn(w)/qLn(2);
 
     round_key->Advanced();
 
-    block[1] = mod(block[1] + (*round_key)[0]);
-    block[3] = mod(block[3] + (*round_key)[1]);
+    tmp[1] = mod(tmp[1] + (*round_key)[0]);
+    tmp[3] = mod(tmp[3] + (*round_key)[1]);
 
     for( int i = 1; i < r+1; i++ )
     {
-        t = BCS::Shift(mod( block[1] * ( 2 * block[1] + 1 ) ), w, logw, toLeft);
-        u = BCS::Shift(mod( block[3] * ( 2 * block[3] + 1 ) ), w, logw, toLeft);
+        t = BCS::Shift(mod( tmp[1] * ( 2 * tmp[1] + 1 ) ), w, logw, toLeft);
+        u = BCS::Shift(mod( tmp[3] * ( 2 * tmp[3] + 1 ) ), w, logw, toLeft);
 
-        block[0] = mod(BCS::Shift(block[0] xor t, w, u, toLeft) + (*round_key)[2*i]);
-        block[2] = mod(BCS::Shift(block[2] xor u, w, t, toLeft) + (*round_key)[2*i + 1]);
+        tmp[0] = mod(BCS::Shift(tmp[0] xor t, w, u, toLeft) + (*round_key)[2*i]);
+        tmp[2] = mod(BCS::Shift(tmp[2] xor u, w, t, toLeft) + (*round_key)[2*i + 1]);
 
-        block.ShiftLeft();
+        tmp.ShiftLeft();
     }
 
-    block[0] = mod(block[0] + (*round_key)[2*r + 2]);
-    block[2] = mod(block[2] + (*round_key)[2*r + 3]);
+    tmp[0] = mod(tmp[0] + (*round_key)[2*r + 2]);
+    tmp[2] = mod(tmp[2] + (*round_key)[2*r + 3]);
+
+    return tmp;
 }
 
-void RC6::DecryptionBlock()
+Block RC6::DecryptionBlock(Block block_for_de)
 {
+    Block tmp = block_for_de;
+
     quint64  t, u, logw = qLn(w)/qLn(2);
 
     round_key->Advanced();
 
-    block[2] = mod(block[2] - (*round_key)[2*r +3]);
-    block[0] = mod(block[0] - (*round_key)[2*r +2]);
+    tmp[2] = mod(tmp[2] - (*round_key)[2*r +3]);
+    tmp[0] = mod(tmp[0] - (*round_key)[2*r +2]);
 
     for( int i = r; i > 0; i-- )
     {
-        block.ShiftRight();
+        tmp.ShiftRight();
 
-        t = BCS::Shift(mod(block[1] * ( 2 * block[1] + 1 ) ), w, logw, toLeft);
-        u = BCS::Shift(mod(block[3] * ( 2 * block[3] + 1 ) ), w, logw, toLeft);
+        t = BCS::Shift(mod(tmp[1] * ( 2 * tmp[1] + 1 ) ), w, logw, toLeft);
+        u = BCS::Shift(mod(tmp[3] * ( 2 * tmp[3] + 1 ) ), w, logw, toLeft);
 
-        block[0] = BCS::Shift(mod(block[0] - (*round_key)[2*i]), w, u, toRight) xor t;
-        block[2] = BCS::Shift(mod(block[2] - (*round_key)[2*i + 1]), w, t, toRight) xor u;
+        tmp[0] = BCS::Shift(mod(tmp[0] - (*round_key)[2*i]), w, u, toRight) xor t;
+        tmp[2] = BCS::Shift(mod(tmp[2] - (*round_key)[2*i + 1]), w, t, toRight) xor u;
     }
 
-    block[3] = mod(block[3] - (*round_key)[1]);
-    block[1] = mod(block[1] - (*round_key)[0]);
+    tmp[3] = mod(tmp[3] - (*round_key)[1]);
+    tmp[1] = mod(tmp[1] - (*round_key)[0]);
+
+    return tmp;
 }
 
-int RC6::ReadBlock(QDataStream &in, int count)
+int RC6::ReadBlock(Block &block_for_read, QDataStream &in, int count)
 {
-    block.set(0, 0, 0, 0);
+    block_for_read.set(0, 0, 0, 0);
 
     if( in.status() == QDataStream::ReadPastEnd ) return 0;
 
@@ -261,14 +326,14 @@ int RC6::ReadBlock(QDataStream &in, int count)
     {
         for( j = 0; j < w/8; j++)
         {
-            block[i] = block[i] << 8;
+            block_for_read[i] = block_for_read[i] << 8;
 
             if( ! ( in.status() == QDataStream::ReadPastEnd) )
                 in >> byte;
 
             if( ! ( in.status() == QDataStream::ReadPastEnd) )
             {
-                block[i] |= byte;
+                block_for_read[i] |= byte;
                 f = true;
             }
         }
@@ -286,21 +351,21 @@ int RC6::ReadBlock(QDataStream &in, int count)
         return 0;
 }
 
-void RC6::WriteBlock(QDataStream &out, int count)
+void RC6::WriteBlock(Block block_for_write, QDataStream &out, int count)
 {
     for( int i = 0; i < count; i++ )
         switch (w)
         {
             case 16 :
-                out << (quint16)block[i];
+                out << (quint16)block_for_write[i];
                 break;
 
             case 32 :
-                out << (quint32)block[i];
+                out << (quint32)block_for_write[i];
                 break;
 
             case 64 : default :
-                out << (quint64)block[i];
+                out << (quint64)block_for_write[i];
                 break;
         }
 }
